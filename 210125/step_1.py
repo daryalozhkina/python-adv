@@ -52,7 +52,7 @@ print(timeit.timeit(to_measure_2, number=1000000, globals={'alphabet': alphabet,
 #
 # start = time.perf_counter()
 # for _ in range(1000000):
-#     is_valid =True
+#     is_valid = True
 #     for letter in name:
 #         if letter not in alphabet:
 #             is_valid = False
