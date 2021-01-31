@@ -40,21 +40,21 @@ for letter in name:
 print(timeit.timeit(to_measure_1, number=1000000, globals={'alphabet': alphabet, 'name': name}))
 print(timeit.timeit(to_measure_2, number=1000000, globals={'alphabet': alphabet, 'name': name}))
 
-import time
-
-alphabet = {chr(el) for el in range(ord('а'), ord('я') + 1)}
-alphabet.add('ё')
-
-start = time.perf_counter()
-for _ in range(1000000):
-    is_valid = not set(name) - alphabet
-print(time.perf_counter() - start)
-
-start = time.perf_counter()
-for _ in range(1000000):
-    is_valid =True
-    for letter in name:
-        if letter not in alphabet:
-            is_valid = False
-            break
-print(time.perf_counter() - start)
+# import time
+#
+# alphabet = {chr(el) for el in range(ord('а'), ord('я') + 1)}
+# alphabet.add('ё')
+#
+# start = time.perf_counter()
+# for _ in range(1000000):
+#     is_valid = not set(name) - alphabet
+# print(time.perf_counter() - start)
+#
+# start = time.perf_counter()
+# for _ in range(1000000):
+#     is_valid =True
+#     for letter in name:
+#         if letter not in alphabet:
+#             is_valid = False
+#             break
+# print(time.perf_counter() - start)
