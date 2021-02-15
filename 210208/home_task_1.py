@@ -2,7 +2,7 @@ import re
 
 import requests
 
-RE_CSV_FILE = re.compile(r'"([^"А-Яа-яЁё]+\.csv)"')
+RE_CSV_FILE = re.compile(r'"([^"А-Яа-яЁё]+\.)"')
 
 file_name = 'text.csv'
 request_csv = 'text.csv'
