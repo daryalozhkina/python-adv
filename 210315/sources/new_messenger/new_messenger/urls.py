@@ -1,4 +1,4 @@
-"""kpk_messenger URL Configuration
+"""new_messenger URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/2.2/topics/http/urls/
@@ -17,7 +17,6 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('', include('mainapp.urls', namespace='main')),
-
+    path('', include('myapp.urls', namespace='my')),
     path('admin/', admin.site.urls),
 ]
