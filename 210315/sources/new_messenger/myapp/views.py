@@ -11,3 +11,19 @@ def index(request):
     }
 
     return render(request, 'myapp/index.html', context)
+
+def show_dialog(request):
+    dialog = get_object_or_404(Dialog, pk=dialog_pk)
+    _dialog_members = DialogMemebers.objects.filter(dialog=dialog)
+    dialog_members = _dialog_members.exclude(member=request.user). \
+        select_related('member')
+    dialog_messages = Message.objects.filter(sender__in=_dialog_members). \
+        select_related('sender__member')
+
+    context = {
+        'dialog': dialog,
+        'dialog_members': dialog_members,
+        'dialog_messages': dialog_messages,
+    }
+
+    return render(request, 'mainapp/show_dialog.html', context)
