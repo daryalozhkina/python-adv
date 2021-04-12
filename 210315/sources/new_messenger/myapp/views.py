@@ -26,4 +26,4 @@ def show_dialog(request):
         'dialog_messages': dialog_messages,
     }
 
-    return render(request, 'mainapp/show_dialog.html', context)
+    return render(request, 'myapp/show_dialog.html', context)
