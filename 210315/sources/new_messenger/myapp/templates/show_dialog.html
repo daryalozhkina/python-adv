@@ -1,34 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-<голова>
+<head>
     <meta charset="UTF-8">
     <title>{{ page_title|capfirst }}</title>
 </head>
-<тело>
+<body>
 <div>
     <a href="{% url 'main:index' %}">main</a>
 </div>
 <h3>Диалог: {{ dialog }}</h3>
 <div class="dialog-members">
     <ul>
- {% для элемента в dialog_members %}
+        {% for item in dialog_members %}
             <li>
                 <a href="#"
                    style="text-decoration: none;">
- {{ item.member.username }}
+                    {{ item.member.username }}
                 </a>
             </li>
- {% endfor %}
+        {% endfor %}
     </ul>
 </div>
 <div class="dialog-messages">
     <ul>
- {% for item in dialog_messages %}
+        {% for item in dialog_messages %}
             <li>
- {{ item.sender.member.username }}
- ({{ item.created|date:"Y. m.d H:i" }}) - {{ item.text }}
+                {{ item.sender.member.username }}
+                ({{ item.created|date:"Y.m.d H:i" }}) - {{ item.text }}
             </li>
- {% endfor %}
+        {% endfor %}
     </ul>
 </div>
 </body>
