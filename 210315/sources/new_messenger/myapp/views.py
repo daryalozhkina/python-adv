@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 
 @login_required
@@ -14,7 +14,7 @@ def index(request):
 
 def show_dialog(request):
     dialog = get_object_or_404(Dialog, pk=dialog_pk)
-    _dialog_members = DialogMemebers.objects.filter(dialog=dialog)
+    _dialog_members = DialogMemembers.objects.filter(dialog=dialog)
     dialog_members = _dialog_members.exclude(member=request.user). \
         select_related('member')
     dialog_messages = Message.objects.filter(sender__in=_dialog_members). \
