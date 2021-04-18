@@ -1,5 +1,8 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
+from django.contrib.urls import reverse
 
 from myapp.models import Dialog, DialogMemebers, Message
 @login_required
@@ -21,9 +24,44 @@ def show_dialog(request):
         select_related('sender__member')
 
     context = {
+        'page_title': 'диалог',
         'dialog': dialog,
         'dialog_members': dialog_members,
         'dialog_messages': dialog_messages,
     }
 
     return render(request, 'myapp/show_dialog.html', context)
+
+def dialog_create(request):
+    dialogues = request.user.dialogs.select_related('dialog').all(). \
+        values_list('dialog_id', flat=True)
+    interlocutors = DialogMemebers.objects.filter(dialog__in=dialogues).\
+        values_list('member_id', flat=True)
+    new_interlocutors = User.objects.exclude(pk__in=interlocutors)
+
+    context = {
+        'page_title': 'новый диалог',
+        'new_interlocutors': new_interlocutors,
+    }
+    return render(request, 'myapp/dialog_create.html', context)
+
+
+def user_dialog_create(request, user_id):
+    interlocutor = User.objects.get(pk=user_id)
+    dialog = Dialog.objects.create(
+        name=interlocutor.username
+    )
+    DialogMemebers.objects.create(
+        dialog=dialog,
+        member=request.user,
+        role=DialogMemebers.CREATOR
+    )
+    DialogMemebers.objects.create(
+        dialog=dialog,
+        member=interlocutor,
+        role=DialogMemebers.INTERLOCUTOR
+    )
+
+    return HttpResponseRedirect(
+        reverse('main:dialog_show', kwargs={'dialog_pk': dialog.pk})
+    )
