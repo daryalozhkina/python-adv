@@ -5,6 +5,7 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.urls import reverse
 
 from myapp.models import Dialog, DialogMemebers, Message
+
 @login_required
 def index(request):
     dialogues = request.user.dialogs.all()
@@ -65,3 +66,28 @@ def user_dialog_create(request, user_id):
     return HttpResponseRedirect(
         reverse('main:dialog_show', kwargs={'dialog_pk': dialog.pk})
     )
+
+def dialog_delete(request, pk):
+    # instance = Dialog.objects.filter(pk=pk).first()
+    instance = get_object_or_404(Dialog, pk=pk)
+    instance.delete()
+    return HttpResponseRedirect(reverse('main:index'))
+
+
+# def dialog_message_create(request):
+class DialogMessageCreate(CreateView):
+    model = Message
+    form_class = DialogMessageForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        form = context['form']
+        sender_pk = self.request.resolver_match.kwargs['sender_pk']
+        form.initial['sender'] = sender_pk
+        return context
+
+    def get_success_url(self):
+        return reverse(
+            'main:dialog_show',
+            kwargs={'dialog_pk': self.object.sender.dialog_id}
+        )

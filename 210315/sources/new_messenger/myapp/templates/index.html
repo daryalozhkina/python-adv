@@ -27,9 +27,27 @@
                         {{ item.dialog.created }}
                     {% if item.dialog.name %} - {{ item.dialog.name }}
                 </a>
+                </div>
+<div class="dialogues-list">
+    <ul>
+        {% for item in dialogues %}
+        <li>
+            <span class="dialog-link">
+                <a href="{% url 'main:dialog_show' item.dialog_id %}"
+                   style="text-decoration: none;">
+                    {{ item.dialog }}
+                </a>
+            </span>
+            <span class="dialog-delete">
+                <a href="{% url 'main:dialog_delete' item.dialog_id %}"
+                   style="text-decoration: none;">
+                    удалить
+                </a>
+            </span>
             </li>
  {% endfor %}
     </ul>
 </div>
+
 </body>
 </html>

@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils.functional import cached_property
 
 
 class Dialog(models.Model):
@@ -8,10 +9,23 @@ class Dialog(models.Model):
                                    db_index=True)
     name = models.CharField(verbose_name='имя', max_length=64, blank=True)
 
+    @cached_property
+    def all_members(self):
+        return self.members.all()
+
+    def get_messages(self):
+        return Message.objects.filter(sender__in=self.all_members). \
+            select_related('sender__member')
+
+    def get_sender(self, user_id):
+        return self.all_members.filter(member_id=user_id).first()
+
     def __str__(self):
-        result = f'{self.created}'
-        if self.name:
-            result += f' ({self.name})'
+        members = User.objects.filter(
+            pk__in=self.all_members.values_list('member_id', flat=True)). \
+            values_list('username', flat=True)
+        result = f'{self.created.strftime("%Y.%m.%d %H:%M")} ' \
+                 f'({" - ".join(members)})'
         return result
 
     class Meta:
@@ -42,6 +56,8 @@ class DialogMemebers(models.Model):
                             db_index=True)
 
     class Meta:
+        verbose_name = 'Участник диалога'
+        verbose_name_plural = 'Участник диалога'
         ordering = ['dialog', '-role', 'member']
 
 
@@ -61,5 +77,4 @@ class Message(models.Model):
     class Meta:
         verbose_name = 'сообщение'
         verbose_name_plural = 'сообщения'
-        # ordering = ['sender', '-created']
         ordering = ['-created']
