@@ -1,14 +1,17 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
-from django.contrib.urls import reverse
+from django.urls import reverse
+from django.views.generic import CreateView
+
+from myapp.forms import DialogMessageForm
 
 from myapp.models import Dialog, DialogMemebers, Message
 
 @login_required
 def index(request):
-    dialogues = request.user.dialogs.all()
+    dialogues = request.user.dialogs.select_related('dialog').all()
     context = {
         'page_title': 'диалоги',
         'dialogues': dialogues,
@@ -68,13 +71,11 @@ def user_dialog_create(request, user_id):
     )
 
 def dialog_delete(request, pk):
-    # instance = Dialog.objects.filter(pk=pk).first()
     instance = get_object_or_404(Dialog, pk=pk)
     instance.delete()
     return HttpResponseRedirect(reverse('main:index'))
 
 
-# def dialog_message_create(request):
 class DialogMessageCreate(CreateView):
     model = Message
     form_class = DialogMessageForm
@@ -84,6 +85,7 @@ class DialogMessageCreate(CreateView):
         form = context['form']
         sender_pk = self.request.resolver_match.kwargs['sender_pk']
         form.initial['sender'] = sender_pk
+
         return context
 
     def get_success_url(self):
@@ -91,3 +93,22 @@ class DialogMessageCreate(CreateView):
             'main:dialog_show',
             kwargs={'dialog_pk': self.object.sender.dialog_id}
         )
+
+    def dialog_new_messages(request, dialog_pk):
+        if request.is_ajax():
+            dialog = Dialog.objects.filter(pk=dialog_pk).first()
+            status = False
+            new_messages = None
+            if dialog:
+                status = True
+                _new_messages = dialog.get_messages_new(request.user.pk)
+                # _new_messages.update(read=True)
+                new_messages = [{'pk': el.pk,
+                                 'username': el.sender.member.username,
+                                 'created': el.created.strftime('%Y.%m.%d %H:%M'),
+                                 'text': el.text}
+                                for el in _new_messages]
+            return JsonResponse({
+                'status': status,
+                'new_messages': new_messages,
+})

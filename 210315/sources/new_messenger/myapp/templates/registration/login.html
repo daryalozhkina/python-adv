@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>login</title>
+
+</head>
+<body>
+   <form method="post" class="login-form">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" class="btn btn-dark" value="login">
+    </form>
+
+</body>
+</html>
+
+{#form-control#}
